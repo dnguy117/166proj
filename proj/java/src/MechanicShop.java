@@ -306,103 +306,561 @@ public class MechanicShop{
 		}while (true);
 		return input;
 	}//end readChoice
-	
+	public static boolean isNumber(String input) {
+		try {
+			int d = Integer.parseInt(input);
+		} catch (NumberFormatException e) {
+			return false;
+		}
+		return true;
+	} 
+	public static boolean compareDates(String dateOpened, String dateClosed) {
+		String mO, dO, yO, mC, dC, yC;
+		int imO, idO, iyO, imC, idC, iyC;
+		
+		String dateO = dateOpened; String dateC = dateClosed;
+		
+		mO = dateO.substring(0,2);
+		if (mO.charAt(1) == '/') {        //"1/"
+			mO = "0" + mO.substring(0,1); //"1/" -> "01"
+			dateO = dateO.substring(2);   //0/2/3456 -> 2/3456 ...
+		}else if (mO.charAt(2) == '/' ) { //"10/"
+			mO = mO.substring(0,2); //	  "10" -> "10"
+			dateO = dateO.substring(3);   //10/2/3456 -> 2/3456 ...			
+		}
+		
+		dO = dateO.substring(0,2);
+		if (dO.charAt(1) == '/') {        //"1/"
+			dO = "0" + dO.substring(0,1); //"1/" -> "01"
+			dateO = dateO.substring(2);   //2/3456 -> 3456 ...
+		}else if (dO.charAt(2) == '/' ) { //"10/"
+			dO = dO.substring(0,2); //	  "10" -> "10"
+			dateO = dateO.substring(3);   //10/3456 -> 3456 ...			
+		}
+		
+		yO = dateO.substring(0, 5);
+		
+		mC = dateC.substring(0,2);
+		if (mC.charAt(1) == '/') {        //"1/"
+			mC = "0" + mC.substring(0,1); //"1/" -> "01"
+			dateC = dateC.substring(2);   //0/2/3456 -> 2/3456 ...
+		}else if (mC.charAt(2) == '/' ) { //"10/"
+			mC = mC.substring(0,2); //	  "10" -> "10"
+			dateC = dateC.substring(3);   //10/2/3456 -> 2/3456 ...			
+		}
+		
+		dC = dateC.substring(0,2);
+		if (dC.charAt(1) == '/') {        //"1/"
+			dC = "0" + dC.substring(0,1); //"1/" -> "01"
+			dateC = dateC.substring(2);   //2/3456 -> 3456 ...
+		}else if (dC.charAt(2) == '/' ) { //"10/"
+			dC = dC.substring(0,2); //	  "10" -> "10"
+			dateC = dateC.substring(3);   //10/3456 -> 3456 ...			
+		}
+		
+		yC = dateC.substring(0, 5);
+		
+		imO = Integer.parseInt(mO);	imC = Integer.parseInt(mC);
+		idO = Integer.parseInt(dO);	idC = Integer.parseInt(dC);
+		iyO = Integer.parseInt(yO);	iyC = Integer.parseInt(yC);
+		
+		if (iyC > iyO) {
+			return true;
+		} else if (iyC == iyO) {
+			if (imC > imO) {
+				return true;
+			}else if (imC == imO) {
+				if(idC > idO) {
+					return true;
+				}else if (idC == idO) { //same date check the time
+					System.out.println("Warning: Service request opened and closed same day...");
+				}else {
+					return false;
+				}
+			}else {
+				return false;
+			}
+		}else {
+			return false;
+		}
+		
+		return false;
+	}
 	public static void AddCustomer(MechanicShop esql){//1
-		String input;
+		String input, fname, lname, phone, address;
 		try {
 			String query = "INSERT INTO Customer VALUES (nextval('seq_customer_id'),'";
-			System.out.print("Please enter first name: ");
-			input = in.readLine();
-			query += input;
-			query += "','";
-				
-			System.out.print("Please enter last name: ");
-			input = in.readLine();
-			query += input;
+			System.out.println("To add new customer into database input the following customer information");
+			do {
+				System.out.print("Auto generate customer ID? (y/n): ");
+				input = in.readLine();
+				System.out.println("input: " + input);
+				if(input.equals("y") || input.equals("n")){
+					break;
+				}
+				System.out.println("Please enter 'y' or 'n'");
+			} while (true);
+			
+			if (input.equals("y")) {
+				//do nothing query info set correctly	
+			} else if (input.equals("n")){
+				query = "INSERT INTO Customer VALUES (";
+				System.out.print("Please enter unique customer id: ");
+				input = in.readLine();
+				query += input;
+				query += ", '";
+			} else {
+				System.out.println("Error: incorrect input parse, exiting...");
+				return;
+			}
+			
+			do {
+				System.out.print("Please enter first name: ");
+				fname = in.readLine();
+				if (fname.length() > 0) {
+					break;
+				}
+				System.out.println("Cannot leave field blank");
+			} while (true);
+			query += fname;
 			query += "','";
 			
-			System.out.print("Please enter phone number: ");
-			input = in.readLine();
-			query += input;
+			do {
+				System.out.print("Please enter last name: ");
+				lname = in.readLine();
+				if (lname.length() > 0) {
+					break;
+				}
+				System.out.println("Cannot leave field blank");
+			} while (true);
+			query += lname;
 			query += "','";
 			
-			System.out.print("Please enter address: ");
-			input = in.readLine();
-			query += input;
+			do {
+				System.out.print("Please enter phone number: ");
+				phone = in.readLine();
+				if(phone.length() == 13) {
+					break;
+				}
+				System.out.println("Format (XXX)XXX-XXXX ");
+			} while (true);
+			query += phone;
+			query += "','";
+			
+			do {
+				System.out.print("Please enter address: ");
+				address = in.readLine();
+				if (address.length() > 0) {
+					break;
+				}
+				System.out.println("Cannot leave field blank");
+			} while (true);
+			query += address;
 			query += "')";
-
-			//System.out.println(query);
-			esql.executeQuery(query);
+			
+			System.out.println("------------Adding New Customer into Database-------------");
+			System.out.println("Name: " + fname + " " + lname);
+			System.out.println("Phone: " + phone);
+			System.out.println("Address: " + address);
+			esql.executeUpdate(query);
 		}catch (Exception e) {
 			System.out.println(e.getMessage());
 		}
 	}
 	
 	public static void AddMechanic(MechanicShop esql){//2
-		String input;
+		String input, fname, lname, experience;
 		try {
-			String query = "INSERT INTO MECHANIC VALUES (nextval('seq_mechanic_id'),'";
-			System.out.print("Please enter first name: ");
-			input = in.readLine();
-
-			query += input;
+			String query = "INSERT INTO MECHANIC VALUES (4('seq_mechanic_id'),'";
+			System.out.println("To add new mechanic into database input the following mechanic information");
+			do {
+				System.out.print("Auto generate mechanic ID? (y/n): ");
+				input = in.readLine();
+				System.out.println("input: " + input);
+				if(input.equals("y") || input.equals("n")){
+					break;
+				}
+				System.out.println("Please enter 'y' or 'n'");
+			} while (true);
+			
+			if (input.equals("y")) {
+				//do nothing query info set correctly
+			} else if (input.equals("n")){
+				query = "INSERT INTO Mechanic VALUES (";
+				System.out.print("Please enter unique mechanic id: ");
+				input = in.readLine();
+				query += input;
+				query += ", '";
+			} else {
+				System.out.println("Error: incorrect input parse, exiting...");
+				return;
+			}
+			
+			do {
+				System.out.print("Please enter first name: ");
+				fname = in.readLine();
+				if (fname.length() > 0) {
+					break;
+				}
+				System.out.println("Cannot leave field blank");
+			} while (true);
+			query += fname;
 			query += "','";
-				
-			System.out.print("Please enter last name: ");
-			input = in.readLine();
-			query += input;
+			
+			do {
+				System.out.print("Please enter last name: ");
+				lname = in.readLine();
+				if (lname.length() > 0) {
+					break;
+				}
+				System.out.println("Cannot leave field blank");
+			} while (true);
+			query += lname;
 			query += "',";
 			
-			System.out.print("Please enter years of experience: ");
-			input = in.readLine();
-			query += input;
+			do {
+				System.out.print("Please enter years of experience: ");
+				experience = in.readLine();
+				if (isNumber(experience) && experience.length() > 0) {
+					break;
+				}
+				System.out.println("Please enter years as a single number");
+			} while (true);
+			query += experience;
 			query += ")";
-
-			//System.out.println(query);
-			esql.executeQuery(query);
+			
+			System.out.println("------------Adding New Mechanic into Database-------------");
+			System.out.println("Name: " + fname + " " + lname);
+			System.out.println("Years Experience: " + experience);
+			
+			esql.executeUpdate(query);
 		}catch (Exception e) {
 			System.out.println(e.getMessage());
 		}
 	}
 	
 	public static void AddCar(MechanicShop esql){//3
-		String input;
+		String input, vin, make, model, year;
 		try {
 			String query = "INSERT INTO CAR VALUES ('";
-			System.out.print("Please enter vehicle identification number (VIN): ");
-			input = in.readLine();
-			query += input;
-			query += "','";
-				
-			System.out.print("Please enter vehicle make: ");
-			input = in.readLine();
-			query += input;
+			System.out.println("To add new car into database input the following vehicle information");
+			
+			do {
+				System.out.print("Please enter vehicle identification number (VIN): ");
+				vin = in.readLine();
+				if (vin.length() == 16) {
+					break;
+				}
+				System.out.println("Please enter 16 digit VIN");
+			} while (true);
+			query += vin;
 			query += "','";
 			
-			System.out.print("Please enter vehicle model: ");
-			input = in.readLine();
-			query += input;
-			query += "',";
-
-			System.out.print("Please enter vehicle year: ");
-			input = in.readLine();
-			query += input;
+			do {
+				System.out.print("Please enter vehicle make: ");
+				make = in.readLine();
+				if (make.length() > 0) {
+					break;
+				}
+				System.out.println("Cannot leave field blank");
+			} while (true);
+			query += make;
+			query += "','";
+			
+			do {
+				System.out.print("Please enter vehicle model: ");
+				model = in.readLine();
+				if (model.length() > 0) {
+					break;
+				}
+				System.out.println("Cannot leave field blank");
+			} while (true);
+			query += model;
+			query += "', ";
+			
+			do {
+				System.out.print("Please enter vehicle year: ");
+				year = in.readLine();
+				if (year.length() == 4 && isNumber(year)) {
+					break;
+				}
+				System.out.println("Format: XXXX");
+			} while (true);
+			query += year;
 			query += ")";
 
-			//System.out.println(query);
-			esql.executeQuery(query);
+			System.out.println("------------Adding Following Car into Database------------");
+			System.out.println("VIN: " + vin);
+			System.out.println("Make: " + make);
+			System.out.println("Model: " + model);
+			System.out.println("Year: " + year);
+			
+			esql.executeUpdate(query);
 		}catch (Exception e) {
 			System.out.println(e.getMessage());
 		}
-
 	}
 	
 	public static void InsertServiceRequest(MechanicShop esql){//4
-		
+		String input, query, lname, fname, vin, date, odometer, complain;
+		String cID = "";
+		String fullNameSearch = "";
+		try{
+			query = "SELECT C.lname FROM Customer C WHERE C.lname = '";
+			System.out.print("Inserting service request for customer with last name: ");
+			do {
+				lname = in.readLine();
+				System.out.println();
+				if (lname.length() > 0) {
+					break;
+				}
+				System.out.println("Please enter customer last name: ");
+			} while (true);
+			query += lname;
+			query += "';";
+			
+			int numCustomers = esql.executeQueryAndPrintResult(query);
+			if(numCustomers == 0) {
+				do {
+					System.out.print("Customer last name not in database, add new customer? (y/n) ");
+					input = in.readLine();
+					if(input.equals("y") || input.equals("n")){
+						break;
+					}
+					System.out.println("Please enter 'y' or 'n'");
+				} while (true);
+			
+				if(input.equals("n")) {
+					return;
+				}else if (input.equals("y")) {
+					AddCustomer(esql, lname);
+					InsertServiceRequest(esql);
+					return;
+				}
+			}else if (numCustomers == 1) {
+				System.out.println("Listing all cars owned by " + lname);
+				query = "SELECT K.vin, K.make, K.model, K.year FROM Owns O, Customer C, Car K WHERE C.id = O.customer_id AND K.vin = O.car_vin AND C.lname = '" + lname + "';";
+				fullNameSearch = "SELECT O.car_vin FROM Owns O, Customer C WHERE O.customer_id = C.id AND C.lname = '" + lname;
+				esql.executeQueryAndPrintResult(query);
+				cID = esql.executeQueryAndReturnResult("SELECT C.id AS cID FROM Customer C WHERE C.lname = '" + lname + "';").get(0).get(0);
+			}else if (numCustomers > 1) {
+				System.out.println("Multiple persons with " + lname + " as last name");
+				System.out.print("Please enter first name of customer: ");
+				do {
+					fname = in.readLine();
+					System.out.println();
+					if (fname.length() > 0) {
+						break;
+					}
+					System.out.println("First name cannot be empty");
+				} while (true);
+				System.out.println("Listing all cars owned by " + fname + " " + lname);
+				query = "SELECT K.vin, K.make, K.model, K.year FROM Owns O, Customer C, Car K WHERE C.id = O.customer_id AND K.vin = O.car_vin AND C.lname = '" + lname + "' AND C.fname = '" + fname + "';";
+				fullNameSearch = "SELECT O.car_vin FROM Owns O, Customer C WHERE O.customer_id = C.id AND C.lname = '" + lname + "' AND C.fname = '" + fname;
+				esql.executeQueryAndPrintResult(query);
+				cID = esql.executeQueryAndReturnResult("SELECT C.id AS cID FROM Customer C WHERE C.lname = '" + lname + "' AND C.fname = '" + fname + "';").get(0).get(0);
+			}else {
+				System.out.println("ERROR: negative number of customers ...exiting");
+				return;
+			}
+			do {
+				System.out.print("Please enter vehicle identification number (VIN) of car for service request: ");
+				vin = in.readLine();
+				if (vin.length() == 16) {
+					break;
+				}
+				System.out.println("Please enter 16 digit VIN");
+			} while (true);
+			
+			int isCarOwnedByUser = esql.executeQueryAndPrintResult(fullNameSearch + "' AND O.car_vin = '" + vin + "';");
+			List<List<String>> carAlredyHaveOwner = esql.executeQueryAndReturnResult("SELECT C.fname, C.lname FROM Customer C, Owns O WHERE C.id = O.customer_id AND O.car_vin = '" + vin + "';");
+			int isCarInDB = esql.executeQuery("SELECT C.vin FROM Car C WHERE C.vin = '" + vin + "';");
+			if(isCarInDB == 0) { //car is not in car database at ALL
+				System.out.println("Car with VIN " + vin + " not in DB");
+				AddCar(esql, vin, lname, cID);
+				//query = "INSERT INTO Owns VALUES (nextval(\'seq_ownership_id\'), " + cID + ", " + vin + ");";
+				//esql.executeQueryAndPrintResult(query);
+				//System.out.println("we got here!");
+			}else if (isCarInDB == 1) { //car in car database
+				if(isCarOwnedByUser == 0) { //not owned by you
+					if(carAlredyHaveOwner.isEmpty()) { //but car has no owner
+						System.out.print("Car with VIN: " + vin + "has no owner registered. Are you the owner? (y/n): ");
+						do {
+							input = in.readLine();
+							if(input.equals("y") || input.equals("n")){
+								break;
+							}
+							System.out.println("Please enter 'y' or 'n'");
+						} while (true);
+						
+						if (input.equals("y")) {
+							System.out.print("For security reasons please enter confirm your last name: ");
+							int attempt = 3;
+							do {
+								input = in.readLine();
+								if(input.equals(lname)){
+									break;
+								}
+								attempt = attempt - 1;
+								System.out.println("Incorrect last name! You have " + attempt + " trie(s) remaining before you are logged out...");
+								if (attempt <= 0) {
+									return;
+								}
+							} while (true);
+							query = "INSERT INTO Owns VALUES (nextval('seq_ownership_id'), " + cID + ", " + vin + ");";
+							esql.executeUpdate(query);
+							System.out.println("The car is now registered under your name!");
+						} else if (input.equals("n")){
+							System.out.println("Sorry! It is illegal issue a service request for someone else's car!");
+							return;
+						} else {
+							System.out.println("Error: incorrect input parse, exiting...");
+							return;
+						}
+					}else { //but car has owner
+						System.out.println("Sorry! It is illegal issue a service request for someone else's car!");
+						System.out.println("VIN: " + vin + " is owned by " + carAlredyHaveOwner.get(0).get(0).replace(" ", "") + " " + carAlredyHaveOwner.get(0).get(1).replace(" ", ""));
+						return;
+					}
+				}else if (isCarOwnedByUser == 1) {
+							//do nothing until we need to issue service requests
+				}else {
+					System.out.println("Error: incorrect input parse, exiting...");
+					return;
+				}
+			}else {
+				System.out.println("Error: incorrect input parse, exiting...");
+				return;
+			}
+			
+			//---ACTUALLY ISSUING THE SERVICE REQUEST----
+			
+			System.out.println("Adding service request for car VIN: " + vin);
+			query = "INSERT INTO Service_Request VALUES (nextval('seq_rid_id'), " + cID + ", " + vin + ", '";
+			System.out.print("Please enter date service request was opened (XX/XX/XXXX): ");
+			do {
+				date = in.readLine();
+				System.out.println();
+				if (date.length() == 10 && date.charAt(2) == '/' && date.charAt(5) == '/') {
+					break;
+				}
+				System.out.print("Please enter valid date format (XX/XX/XXXX): ");
+			} while (true);
+			query += date;
+			query += "', ";
+			
+			System.out.print("Please enter odometer reading: ");
+			odometer = in.readLine();
+			query += odometer;
+			query += ", '";			
+			
+			System.out.print("Please enter complaint: ");
+			complain = in.readLine();
+			query += complain;
+			query += "');";
+
+			System.out.println("-------------Opening following service request-------------");
+			System.out.println("Customer ID: " + cID);
+			System.out.println("Car VIN:" + vin);
+			System.out.println("Date Opened: " + date);
+			System.out.println("Odometer:" + odometer);
+			System.out.println("Complaint: " + complain);
+			
+			esql.executeUpdate(query);
+			
+		}catch(Exception e){
+			System.err.println (e.getMessage());
+		}	
 	}
 	
 	public static void CloseServiceRequest(MechanicShop esql) throws Exception{//5
-		
+		String input, fquery, query, sNum, dateClosed, dateOpened, eID, bill;
+		int isValid = 0;
+		try{
+			fquery = "INSERT INTO Closed_Request VALUES (nextval('seq_win_id'), ";
+			System.out.print("Please enter service request number of request to close: ");
+			do {
+				sNum = in.readLine();
+				System.out.println();
+				query = "SELECT S.rid FROM Service_Request S WHERE S.rid = " + sNum + ";";
+				isValid = esql.executeQuery(query);
+				if (sNum.length() > 0 && isNumber(sNum) && isValid == 1) {
+					break;
+				}
+				if (isValid == 0) {
+					System.out.println("Invalid service request number");
+				}
+				System.out.println("Please enter exsisting service request number: ");
+			} while (true);
+			fquery += sNum + ", ";
+			
+			System.out.print("Please enter employee ID of employee assigned to request: ");
+			do {
+				eID = in.readLine();
+				System.out.println();
+				query = "SELECT M.id FROM Mechanic M WHERE M.id = " + eID + ";";
+				isValid = esql.executeQuery(query);
+				if (sNum.length() > 0 && isNumber(sNum) && isValid == 1) {
+					break;
+				}
+				if (isValid == 0) {
+					System.out.println("Invalid employee ID");
+				}
+				System.out.println("Please enter valid employee ID: ");
+			} while (true);
+			fquery += eID + ", '";
+			
+			System.out.print("Please enter date service request " + sNum + " was closed (XX/XX/XXXX): ");
+			do {
+				do {
+					dateClosed = in.readLine();
+					System.out.println();
+					if (dateClosed.length() == 10 && dateClosed.charAt(2) == '/' && dateClosed.charAt(5) == '/') {
+						break;
+					}
+					System.out.print("Please enter valid date format (XX/XX/XXXX): ");
+				} while (true);
+				dateOpened = esql.executeQueryAndReturnResult("SELECT S.date FROM Service_Request S WHERE S.rid = " + sNum + ";").get(0).get(0);
+				boolean dateClosedCorrect = compareDates(dateOpened, dateClosed);
+				if (dateClosed.length() > 0 && dateClosedCorrect == true) {
+					break;
+				}
+				if (dateClosedCorrect == false) {
+					System.out.println("Please enter date after service request was opened");
+				}
+			} while (true);
+			fquery += dateClosed + " 12:00:00 AM', '";
+			
+			System.out.print("Please enter any comments here: ");
+			input = in.readLine();
+			fquery += input + "', ";
+			
+			System.out.print("Please enter final bill ammout for service: $");
+			do {
+				bill = in.readLine();
+				System.out.println();
+				if (isNumber(bill) && bill.length() > 0 && !bill.contains("-")) {
+					break;
+				}
+				if (bill.contains("-")) {
+					System.out.println("Final bill cannot be negative number!");
+				}
+				System.out.println("Please enter valid bill: $");
+			} while (true);
+			fquery += bill + ");";
+			
+			System.out.println("---------Creating following closed service request---------");
+			System.out.println("Service Request ID: " + sNum);
+			System.out.println("Mechanic ID:" + eID);
+			System.out.println("Date Closed: " + dateClosed);
+			System.out.println("Comments:" + input);
+			System.out.println("Bill: $" + bill);
+			esql.executeUpdate(fquery);
+
+		}catch(Exception e){
+			System.err.println (e.getMessage());
+		}
+			
 	}
 	
 	public static void ListCustomersWithBillLessThan100(MechanicShop esql){//6
@@ -411,11 +869,13 @@ public class MechanicShop{
 			esql.executeQueryAndPrintResult(query);
 		}catch(Exception e){
 			System.err.println (e.getMessage());
-		}	
+		}
+		
 	}
 	
 	public static void ListCustomersWithMoreThan20Cars(MechanicShop esql){//7
 		try{
+			System.out.println("The following customers own more than 20 cars");
 			String query = "SELECT C.fname, C.lname FROM Customer C, Owns O WHERE C.id=O.customer_id GROUP BY C.id HAVING COUNT(C.id)>20";
 			esql.executeQueryAndPrintResult(query);
 		}catch(Exception e){
@@ -425,6 +885,7 @@ public class MechanicShop{
 	
 	public static void ListCarsBefore1995With50000Milles(MechanicShop esql){//8
 		try{
+			System.out.println("The following cars were build before 1995 and have less than 50000 miles");
 			String query = "SELECT C.make, C.model, C.year FROM Car C, Service_Request S WHERE C.vin=S.car_vin AND C.year<1995 AND S.odometer<50000";
 			esql.executeQueryAndPrintResult(query);
 		}catch(Exception e){
@@ -464,4 +925,218 @@ public class MechanicShop{
 		
 	}
 	
+	public static void AddCar(MechanicShop esql, String vin, String lname, String cID){//3
+		String input, make, model, year;
+		try {
+			String query = "INSERT INTO Car VALUES ('";
+			System.out.println("To add car, confirm VIN and input the rest of the vehicle's information");
+			
+			do {
+				System.out.print("Is this the correct vehicle identification number (VIN): " + vin + " (y/n)? ");
+				input = in.readLine();
+				if(input.equals("y") || input.equals("n")){
+					break;
+				}
+				System.out.println("Please confirm 'y' or 'n'");
+			} while (true);
+			
+			if (input.equals("y")) {
+				query += vin + "', '";	
+			} else if (input.equals("n")){
+				do {
+					System.out.print("Restart entering vehicle information for " + lname + "'s new car (y/n)? ");
+					input = in.readLine();
+					if(input.equals("y") || input.equals("n")){
+						break;
+					}
+					System.out.println("Please confirm 'y' or 'n'");
+				} while (true);
+				
+				if (input.equals("y")) {
+					do {
+						System.out.print("Please re-enter vehicle identification number (VIN): ");
+						input = in.readLine();
+						if (input.length() == 16) {
+							query += input;
+							query += "','";
+							break;
+						}
+						System.out.println("Please enter 16 digit VIN");
+					} while (true);
+				} else if (input.equals("n")){
+					return;
+				} else {
+					System.out.println("Error: incorrect input parse, exiting...");
+					return;
+				}
+			} else {
+				System.out.println("Error: incorrect input parse, exiting...");
+				return;
+			}
+					
+			do {
+				System.out.print("Please enter vehicle make: ");
+				make = in.readLine();
+				if (make.length() > 0) {
+					break;
+				}
+				System.out.println("Cannot leave field blank");
+			} while (true);
+			query += make;
+			query += "', '";
+			
+			do {
+				System.out.print("Please enter vehicle model: ");
+				model = in.readLine();
+				if (model.length() > 0) {
+					break;
+				}
+				System.out.println("Cannot leave field blank");
+			} while (true);
+			query += model;
+			query += "',";
+			
+			do {
+				System.out.print("Please enter vehicle year: ");
+				year = in.readLine();
+				if (year.length() == 4 && isNumber(year)) {
+					break;
+				}
+				System.out.println("Format: XXXX");
+			} while (true);
+			query += year;
+			query += ")";
+			
+			System.out.println("------------Adding " + lname + "'s Car into Database------------");
+			System.out.println("VIN: " + vin);
+			System.out.println("Make: " + make);
+			System.out.println("Model: " + model);
+			System.out.println("Year: " + year);
+			
+			esql.executeUpdate(query);
+			
+			query = "INSERT INTO Owns VALUES (nextval('seq_ownership_id'), " + cID + ", '" + vin + "');";
+			esql.executeUpdate(query);
+			
+		}catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+
+	}
+	
+	public static void AddCustomer(MechanicShop esql, String lname){//1
+		String input, fname, phone, address;
+		try {
+			String query = "INSERT INTO Customer VALUES (nextval('seq_customer_id'),'";
+			System.out.println("To add new customer " + lname + " into database input the following customer information");
+			do {
+				System.out.print("Auto generate customer ID? (y/n): ");
+				input = in.readLine();
+				System.out.println("input: " + input);
+				if(input.equals("y") || input.equals("n")){
+					break;
+				}
+				System.out.println("Please enter 'y' or 'n'");
+			} while (true);
+			
+			if (input.equals("y")) {
+				//do nothing query info set correctly	
+			} else if (input.equals("n")){
+				query = "INSERT INTO Customer VALUES (";
+				System.out.print("Please enter unique customer id: ");
+				input = in.readLine();
+				query += input;
+				query += ", '";
+			} else {
+				System.out.println("Error: incorrect input parse, exiting...");
+				return;
+			}
+			
+			do {
+				System.out.print("Please enter first name: ");
+				fname = in.readLine();
+				if (fname.length() > 0) {
+					break;
+				}
+				System.out.println("Cannot leave field blank");
+			} while (true);
+			query += fname;
+			query += "','";
+			
+
+			do {
+				System.out.print("Is " + lname + " the correct last name of " + query + " (y/n)? ");
+				input = in.readLine();
+				if(input.equals("y") || input.equals("n")){
+					break;
+				}
+				System.out.println("Please confirm 'y' or 'n'");
+			} while (true);
+			
+			if (input.equals("y")) {
+				query += lname + ", ";	
+			} else if (input.equals("n")){
+				do {
+					System.out.print("Enter correct last name for customer (y/n)? ");
+					input = in.readLine();
+					if(input.equals("y") || input.equals("n")){
+						break;
+					}
+					System.out.println("Please confirm 'y' or 'n'");
+				} while (true);
+				
+				if (input.equals("y")) {
+					do {
+						System.out.print("Please re-enter customer last name: ");
+						input = in.readLine();
+						if (input.length() > 0) {
+							query += input;
+							query += "','";
+							break;
+						}
+						System.out.println("Cannot leave field blank");
+					} while (true);
+				} else if (input.equals("n")){
+					return;
+				} else {
+					System.out.println("Error: incorrect input parse, exiting...");
+					return;
+				}
+			} else {
+				System.out.println("Error: incorrect input parse, exiting...");
+				return;
+			}
+			
+			do {
+				System.out.print("Please enter phone number: ");
+				phone = in.readLine();
+				if(phone.length() == 13) {
+					break;
+				}
+				System.out.println("Format (XXX)XXX-XXXX ");
+			} while (true);
+			query += phone;
+			query += "','";
+			
+			do {
+				System.out.print("Please enter address: ");
+				address = in.readLine();
+				if (address.length() > 0) {
+					break;
+				}
+				System.out.println("Cannot leave field blank");
+			} while (true);
+			query += address;
+			query += "')";
+			
+			System.out.println("------------Adding New Customer into Database-------------");
+			System.out.println("Name: " + fname + " " + lname);
+			System.out.println("Phone: " + phone);
+			System.out.println("Address: " + address);
+			
+			esql.executeUpdate(query);
+		}catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+	}
 }
