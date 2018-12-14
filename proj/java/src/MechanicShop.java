@@ -736,7 +736,7 @@ public class MechanicShop{
 			//---ACTUALLY ISSUING THE SERVICE REQUEST----
 			
 			System.out.println("Adding service request for car VIN: " + vin);
-			query = "INSERT INTO Service_Request VALUES (nextval('seq_rid_id'), " + cID + ", " + vin + ", '";
+			query = "INSERT INTO Service_Request VALUES (nextval('seq_rid_id'), " + cID + ", '" + vin + "', '";
 			System.out.print("Please enter date service request was opened (XX/XX/XXXX): ");
 			do {
 				date = in.readLine();
@@ -1074,7 +1074,7 @@ public class MechanicShop{
 			} while (true);
 			
 			if (input.equals("y")) {
-				query += lname + ", ";	
+				query += lname + "','";	
 			} else if (input.equals("n")){
 				do {
 					System.out.print("Enter correct last name for customer (y/n)? ");
