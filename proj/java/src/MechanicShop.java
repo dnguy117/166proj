@@ -471,7 +471,7 @@ public class MechanicShop{
 	public static void AddMechanic(MechanicShop esql){//2
 		String input, fname, lname, experience;
 		try {
-			String query = "INSERT INTO MECHANIC VALUES (4('seq_mechanic_id'),'";
+			String query = "INSERT INTO MECHANIC VALUES (";
 			System.out.println("To add new mechanic into database input the following mechanic information");
 			do {
 				System.out.print("Auto generate mechanic ID? (y/n): ");
@@ -484,7 +484,7 @@ public class MechanicShop{
 			} while (true);
 			
 			if (input.equals("y")) {
-				//do nothing query info set correctly
+				query += "nextval('seq_mechanic_id'),'";
 			} else if (input.equals("n")){
 				query = "INSERT INTO Mechanic VALUES (";
 				System.out.print("Please enter unique mechanic id: ");
@@ -532,6 +532,7 @@ public class MechanicShop{
 			System.out.println("------------Adding New Mechanic into Database-------------");
 			System.out.println("Name: " + fname + " " + lname);
 			System.out.println("Years Experience: " + experience);
+			System.out.println(query);
 			
 			esql.executeUpdate(query);
 		}catch (Exception e) {
